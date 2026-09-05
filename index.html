@@ -652,8 +652,11 @@
                     </p>
                     <div style="display: flex; gap: 10px; margin-top: 1rem;">
                         <button class="btn" style="flex: 1; border: 1px solid var(--border);" onclick="exportData()">Export Data</button>
+                        <button class="btn" style="flex: 1; border: 1px solid var(--border);" onclick="document.getElementById('import-file').click()">Import Data</button>
                         <button class="btn" style="flex: 1; border: 1px solid var(--danger); color: var(--danger);" onclick="UI.resetApp()">Reset App</button>
                     </div>
+                    <input type="file" id="import-file" style="display:none" accept=".json" onchange="importData(event)">
+                </div>
                 </div>
             </div>
         </div>
@@ -1804,6 +1807,29 @@
             a.href = url;
             a.download = 'finvision_backup.json';
             a.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.transactions || !data.user) {
+                        throw new Error("Invalid backup file format. Please use a file exported from FinVision.");
+                    }
+
+                    if (confirm("Importing data will overwrite your current records. Continue?")) {
+                        Storage.save(data);
+                        location.reload();
+                    }
+                } catch (err) {
+                    alert("Error importing data: " + err.message);
+                }
+            };
+            reader.readAsText(file);
         }
 
         window.onload = () => {

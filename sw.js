@@ -1,6 +1,6 @@
 const CACHE_NAME = 'finvision-cache-v1';
 const ASSETS_TO_CACHE = [
-  './finvision.html',
+  './index.html',
   './manifest.json',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
