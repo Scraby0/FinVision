@@ -1,0 +1,17 @@
+{
+  "name": "FinVision Pro Finance Tracker",
+  "short_name": "FinVision",
+  "start_url": "finvision.html",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#2563eb",
+  "description": "Professional offline-first finance tracker and advisor.",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2534/2534695.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
