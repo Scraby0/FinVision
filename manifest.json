@@ -8,7 +8,7 @@
   "description": "Professional offline-first finance tracker and advisor.",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2534/2534695.png",
+      "src": "finvision_icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

@@ -4,40 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinVision Pro | Offline Edition</title>
+    <link rel="icon" href="finvision_icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="finvision_icon.png">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#4f46e5">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-soft: #dbeafe;
+            --primary: #4f46e5;
+            --primary-glow: rgba(79, 70, 229, 0.4);
+            --primary-soft: #eef2ff;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --bg-main: #f1f5f9;
-            --bg-card: #ffffff;
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.7);
             --text-main: #0f172a;
             --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius-lg: 20px;
-            --radius-md: 12px;
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --border: rgba(226, 232, 240, 0.6);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         body.dark-mode {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
+            --bg-main: #020617;
+            --bg-card: rgba(15, 23, 42, 0.6);
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
-            --border: #334155;
-            --primary-soft: #1e3a8a;
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+            --border: rgba(51, 65, 85, 0.4);
+            --primary-soft: rgba(79, 70, 229, 0.15);
+            --shadow-md: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
 
+        /* Premium Background Mesh */
         body {
             background-color: var(--bg-main);
             color: var(--text-main);
@@ -45,6 +51,39 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        body::before, body::after, .bg-blob {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .bg-blob { width: 600px; height: 600px; }
+        body::before {
+            background: var(--primary-soft);
+            top: -10%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+        }
+        body::after {
+            background: var(--primary);
+            bottom: -10%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            animation-delay: -10s;
+        }
+        @keyframes float {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(100px, 100px) scale(1.1); }
         }
 
         /* Navigation */
@@ -71,7 +110,7 @@
             letter-spacing: -0.5px;
         }
         .logo-icon {
-            background: linear-gradient(135deg, var(--primary), #6366f1);
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
             color: white;
             width: 36px;
             height: 36px;
@@ -80,8 +119,15 @@
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px var(--primary-glow);
             flex-shrink: 0;
+            overflow: hidden;
+        }
+        .logo-icon img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
         }
 
         .nav-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
@@ -96,9 +142,15 @@
             font-weight: 500;
             transition: var(--transition);
             user-select: none;
+            border: 1px solid transparent;
         }
         .nav-item:hover { background: var(--bg-main); color: var(--primary); }
-        .nav-item.active { background: var(--primary-soft); color: var(--primary); }
+        .nav-item.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
 
         /* Layout */
         main {
@@ -108,9 +160,12 @@
             max-width: 1600px;
         }
 
-        .page { display: none; animation: fadeIn 0.3s ease-out; }
+        .page { display: none; animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         header {
             display: flex;
@@ -159,11 +214,20 @@
 
         .card {
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 1.5rem;
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+            border: var(--glass-border);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--primary);
         }
 
         .stat-label { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem; display: block; }
@@ -188,23 +252,27 @@
 
         .table-container {
             background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+            border: var(--glass-border);
             overflow: hidden;
         }
 
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th {
-            background: var(--bg-main);
-            padding: 1rem;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 1.2rem 1rem;
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.75rem;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border);
+            letter-spacing: 0.05em;
         }
-        td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        td { padding: 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; transition: var(--transition); }
+        tr:hover td { background: var(--primary-soft); }
         .amount-income { color: var(--success); font-weight: 600; }
         .amount-expense { color: var(--danger); font-weight: 600; }
 
@@ -248,11 +316,23 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px var(--primary-glow);
+            filter: brightness(1.1);
+        }
         .btn-secondary { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { background: var(--border); }
+        .btn-secondary:hover { background: var(--border); transform: scale(1.05); }
 
         /* Reports Styles */
         .timeframe-selector {
@@ -261,7 +341,8 @@
             background: var(--bg-card);
             padding: 6px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--border);
+            border: var(--glass-border);
+            backdrop-filter: blur(10px);
         }
         .btn-timeframe {
             padding: 6px 12px;
@@ -274,18 +355,42 @@
             cursor: pointer;
             transition: var(--transition);
         }
-        .btn-timeframe:hover { color: var(--primary); }
+        .btn-timeframe:hover { color: var(--primary); background: var(--primary-soft); }
         .btn-timeframe.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+            box-shadow: 0 4px 12px var(--primary-glow);
         }
 
         /* Budget */
         .budget-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
         .budget-info { display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-weight: 600; font-size: 0.9rem; }
-        .progress-bar { height: 8px; background: var(--bg-main); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); transition: width 0.6s ease; }
+        .progress-bar {
+            height: 12px;
+            background: var(--bg-main);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 10px var(--primary-glow);
+            position: relative;
+        }
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
 
         /* AI Advisor */
         .advisor-container { display: grid; grid-template-columns: 350px 1fr; gap: 2rem; }
@@ -294,21 +399,22 @@
             background: var(--bg-card);
             padding: 1.25rem;
             border-radius: var(--radius-lg);
-            border-left: 4px solid var(--primary);
             box-shadow: var(--shadow-md);
             display: flex;
             gap: 12px;
             font-size: 0.9rem;
             line-height: 1.5;
-            border: 1px solid var(--border);
-            border-left-width: 4px;
+            border: var(--glass-border);
+            border-left: 5px solid var(--primary);
+            transition: var(--transition);
         }
+        .tip-card:hover { transform: translateX(5px); border-color: var(--primary); }
 
         .advisor-chat {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
-            border: 1px solid var(--border);
+            border: var(--glass-border);
             display: flex;
             flex-direction: column;
             height: 600px;
@@ -320,6 +426,8 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
         .chat-messages {
             flex: 1;
@@ -327,16 +435,30 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 1.2rem;
         }
         .msg {
             max-width: 80%;
-            padding: 0.75rem 1rem;
-            border-radius: 16px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 18px;
             font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: var(--transition);
         }
-        .msg.ai { background: var(--bg-main); align-self: flex-start; border-bottom-left-radius: 4px; }
-        .msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg.ai {
+            background: var(--bg-main);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: var(--glass-border);
+        }
+        .msg.user {
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
 
         .chat-input-area { padding: 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 10px; }
 
@@ -350,6 +472,18 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            padding: 1rem 0;
+        }
+        .settings-card {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .settings-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
         }
 
         /* Modal Styles */
@@ -391,10 +525,13 @@
 <body class="light-mode">
 
     <nav>
-        <div class="logo">
-            <div class="logo-icon">
-                <i class="fa-solid fa-chart-line"></i>
-            </div>
+    <div class="logo">
+        <div class="logo-icon" style="padding: 4px; background: transparent; box-shadow: none;">
+            <!-- Added object-fit: contain; here -->
+            <img src="finvision_icon.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;"> 
+        </div>
+        <span>FinVision Pro</span>
+    </div>
             <span>FinVision Pro</span>
         </div>
         <ul class="nav-links">
@@ -413,6 +550,10 @@
             <li class="nav-item" data-page="reports">
                 <i class="fa-solid fa-file-invoice-dollar"></i>
                 <span>Reports</span>
+            </li>
+            <li class="nav-item" data-page="automations">
+                <i class="fa-solid fa-repeat"></i>
+                <span>Automations</span>
             </li>
             <li class="nav-item" data-page="advisor">
                 <i class="fa-solid fa-robot"></i>
@@ -441,6 +582,13 @@
 
         <!-- Dashboard -->
         <div id="dashboard" class="page active">
+            <div class="welcome-section" style="margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Welcome back, <span id="welcome-user">User</span>! 👋</h2>
+                    <p style="color: var(--text-muted); font-size: 1rem;">Here's a quick overview of your finances.</p>
+                </div>
+                <div style="text-align: right; color: var(--text-muted); font-size: 0.9rem;" id="current-date-display"></div>
+            </div>
             <div class="stats-grid" id="top-stats"></div>
 
             <div class="visuals-grid">
@@ -595,6 +743,20 @@
                     </thead>
                     <tbody id="report-body"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Automations -->
+        <div id="automations" class="page">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <div>
+                    <h1>Automations</h1>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Scheduled recurring transactions</p>
+                </div>
+                <button class="btn btn-primary" id="open-recurring-modal">Create Recurring</button>
+            </div>
+            <div class="budget-grid" id="recurring-container">
+                <!-- Recurring rule cards rendered here -->
             </div>
         </div>
 
@@ -781,6 +943,75 @@
         </div>
     </div>
 
+    <!-- Recurring Modal -->
+    <div class="modal-overlay" id="recurring-modal">
+        <div class="modal">
+            <div class="modal-header">Create Recurring Transaction</div>
+            <div class="profile-editor">
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="rec-desc" placeholder="e.g. Monthly Rent" list="desc-suggestions">
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="rec-amount" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="rec-cat">
+                        <optgroup label="Essentials">
+                            <option value="Food">Food & Groceries</option>
+                            <option value="Rent">Rent & Housing</option>
+                            <option value="Utilities">Utilities (Elect/Water)</option>
+                            <option value="Transport">Transport & Fuel</option>
+                            <option value="Health">Health & Medicine</option>
+                        </optgroup>
+                        <optgroup label="Lifestyle">
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Dining">Dining Out</option>
+                            <option value="Travel">Travel & Tourism</option>
+                            <option value="Gym">Fitness & Gym</option>
+                        </optgroup>
+                        <optgroup label="Financial">
+                            <option value="Income">Primary Income</option>
+                            <option value="Investments">Investments</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Loan">Loan Payments</option>
+                        </optgroup>
+                        <optgroup label="Other">
+                            <option value="Gifts">Gifts & Donations</option>
+                            <option value="Misc">Miscellaneous</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="rec-type">
+                        <option value="expense">Expense</option>
+                        <option value="income">Income</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Frequency</label>
+                    <select id="rec-freq">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" id="rec-start">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-recurring-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-recurring-btn">Save Automation</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- LOCAL STORAGE MANAGER ---
         const Storage = {
@@ -794,7 +1025,8 @@
                 return {
                     transactions: [],
                     budgets: {},
-                    user: { name: 'New User', initials: 'NU', currency: 'INR', initialBalance: 0 }
+                    user: { name: 'New User', initials: 'NU', currency: 'INR', initialBalance: 0 },
+                    recurring: []
                 };
             }
         };
@@ -803,7 +1035,8 @@
             transactions: [],
             budgets: {},
             user: { name: '', initials: '', currency: 'INR', initialBalance: 0 },
-            theme: localStorage.getItem('theme') || 'light'
+            theme: localStorage.getItem('theme') || 'light',
+            recurring: []
         };
 
         const ThemeManager = {
@@ -841,21 +1074,73 @@
                 if (cfCanvas) {
                     const cfCtx = cfCanvas.getContext('2d');
                     this.cashFlow = new Chart(cfCtx, {
-                        type: 'line',
+                        type: 'bar',
                         data: {
                             labels: [],
                             datasets: [
-                                { label: 'Income', data: [], borderColor: '#10b981', tension: 0.4, fill: true, backgroundColor: 'rgba(16, 185, 129, 0.05)' },
-                                { label: 'Expenses', data: [], borderColor: '#ef4444', tension: 0.4, fill: true, backgroundColor: 'rgba(239, 68, 68, 0.05)' }
+                                {
+                                    label: 'Income',
+                                    data: [],
+                                    backgroundColor: '#10b981',
+                                    borderRadius: 6,
+                                    order: 2
+                                },
+                                {
+                                    label: 'Expenses',
+                                    data: [],
+                                    backgroundColor: '#ef4444',
+                                    borderRadius: 6,
+                                    order: 2
+                                },
+                                {
+                                    label: 'Net Balance',
+                                    data: [],
+                                    type: 'line',
+                                    borderColor: '#4f46e5',
+                                    borderWidth: 3,
+                                    pointBackgroundColor: '#4f46e5',
+                                    tension: 0.4,
+                                    fill: false,
+                                    order: 1
+                                }
                             ]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: { legend: { labels: { color: this.getTextColor() }, position: 'bottom' } },
+                            plugins: {
+                                legend: {
+                                    labels: { color: this.getTextColor() },
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    padding: 12,
+                                    callbacks: {
+                                        label: function(context) {
+                                            let label = context.dataset.label || '';
+                                            if (label) label += ': ';
+                                            if (context.parsed.y !== null) {
+                                                label += state.user.currency + ' ' + context.parsed.y.toLocaleString();
+                                            }
+                                            return label;
+                                        }
+                                    }
+                                }
+                            },
                             scales: {
-                                x: { ticks: { color: this.getTextColor() }, grid: { color: this.getGridColor() } },
-                                y: { ticks: { color: this.getTextColor() }, grid: { color: this.getGridColor() } }
+                                x: {
+                                    ticks: { color: this.getTextColor() },
+                                    grid: { color: this.getGridColor(), drawOnChartArea: false }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: this.getTextColor(),
+                                        callback: value => state.user.currency + ' ' + value.toLocaleString()
+                                    },
+                                    grid: { color: this.getGridColor() }
+                                }
                             }
                         }
                     });
@@ -1236,6 +1521,61 @@
             }
         };
 
+        // --- RECURRING PROCESSOR ---
+        const RecurringProcessor = {
+            calculateNextDate(date, frequency) {
+                const next = new Date(date);
+                if (frequency === 'weekly') {
+                    next.setDate(next.getDate() + 7);
+                } else if (frequency === 'monthly') {
+                    const originalDay = next.getDate();
+                    next.setMonth(next.getMonth() + 1);
+                    if (next.getDate() !== originalDay) {
+                        next.setDate(0);
+                    }
+                } else if (frequency === 'yearly') {
+                    next.setFullYear(next.getFullYear() + 1);
+                }
+                return next;
+            },
+
+            process() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let changed = false;
+
+                state.recurring.forEach(rule => {
+                    let nextDate = new Date(rule.lastProcessedDate || rule.startDate);
+                    nextDate.setHours(0, 0, 0, 0);
+
+                    if (!rule.lastProcessedDate) {
+                        nextDate = new Date(rule.startDate);
+                        nextDate.setHours(0, 0, 0, 0);
+                    } else {
+                        nextDate = this.calculateNextDate(nextDate, rule.frequency);
+                    }
+
+                    while (nextDate <= today) {
+                        UI.handleAddTransaction({
+                            desc: `[Recurring] ${rule.desc}`,
+                            amount: rule.amount,
+                            cat: rule.cat,
+                            type: rule.type
+                        });
+
+                        rule.lastProcessedDate = nextDate.toISOString().split('T')[0];
+                        nextDate = this.calculateNextDate(nextDate, rule.frequency);
+                        changed = true;
+                    }
+                });
+
+                if (changed) {
+                    Storage.save({ ...state });
+                    UI.renderAll();
+                }
+            }
+        };
+
         const UI = {
             editingTxId: null,
 
@@ -1332,6 +1672,20 @@
                 const saveBudgetBtn = document.getElementById('save-budget-btn');
                 if (saveBudgetBtn) saveBudgetBtn.addEventListener('click', () => this.handleSaveBudget());
 
+                // Recurring Modal Events
+                const openRecBtn = document.getElementById('open-recurring-modal');
+                if (openRecBtn) openRecBtn.addEventListener('click', () => {
+                    document.getElementById('recurring-modal').style.display = 'flex';
+                });
+
+                const cancelRecBtn = document.getElementById('cancel-recurring-btn');
+                if (cancelRecBtn) cancelRecBtn.addEventListener('click', () => {
+                    document.getElementById('recurring-modal').style.display = 'none';
+                });
+
+                const saveRecBtn = document.getElementById('save-recurring-btn');
+                if (saveRecBtn) saveRecBtn.addEventListener('click', () => this.handleSaveRecurring());
+
                 // Modal events
                 document.getElementById('cancel-edit-btn').addEventListener('click', () => this.closeEditModal());
                 document.getElementById('save-edit-btn').addEventListener('click', () => this.handleSaveEdit());
@@ -1354,6 +1708,7 @@
                 this.renderBudgets();
                 this.renderTips();
                 this.renderReports('monthly'); // Default to monthly
+                this.renderAutomations();
                 ChartManager.update();
             },
 
@@ -1361,6 +1716,9 @@
                 const now = new Date();
                 const currMonth = now.toISOString().substring(0, 7);
                 const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().substring(0, 7);
+
+                document.getElementById('welcome-user').innerText = state.user.name || 'User';
+                document.getElementById('current-date-display').innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
                 const getMonthlyTotals = (month) => {
                     return state.transactions
@@ -1393,12 +1751,13 @@
                 const expenseTrend = calcTrend(curr.expense, prev.expense);
 
                 const stats = [
-                    { label: 'Total Balance', value: `${state.user.currency} ${balance.toLocaleString()}`, trend: 'up', trendVal: '0%' },
+                    { label: 'Total Balance', value: `${state.user.currency} ${balance.toLocaleString()}`, trend: 'up', trendVal: '0%', icon: 'fa-wallet', color: 'var(--primary)' },
                     {
                         label: 'Monthly Income',
                         value: `${state.user.currency} ${curr.income.toLocaleString()}`,
                         trend: incomeTrend.dir || 'neutral',
                         trendVal: incomeTrend.val || '0%',
+                        icon: 'fa-arrow-trend-up',
                         color: 'var(--success)'
                     },
                     {
@@ -1406,17 +1765,23 @@
                         value: `${state.user.currency} ${curr.expense.toLocaleString()}`,
                         trend: expenseTrend.dir || 'neutral',
                         trendVal: expenseTrend.val || '0%',
+                        icon: 'fa-arrow-trend-down',
                         color: 'var(--danger)'
                     },
-                    { label: 'Savings Rate', value: `${savingsRate}%`, trend: 'up', trendVal: '0%' },
+                    { label: 'Savings Rate', value: `${savingsRate}%`, trend: 'up', trendVal: '0%', icon: 'fa-piggy-bank', color: 'var(--warning)' },
                 ];
 
                 const statsGrid = document.getElementById('top-stats');
                 if (statsGrid) {
                     statsGrid.innerHTML = stats.map(s => `
                         <div class="card">
-                            <span class="stat-label">${s.label}</span>
-                            <div class="stat-value" style="color: ${s.color || 'inherit'}">${s.value}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                <span class="stat-label">${s.label}</span>
+                                <div style="width: 32px; height: 32px; background: ${s.color}22; color: ${s.color}; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">
+                                    <i class="fa-solid ${s.icon}"></i>
+                                </div>
+                            </div>
+                            <div class="stat-value" style="color: ${s.color || 'inherit'}; margin-bottom: 0.5rem;">${s.value}</div>
                             <div class="stat-trend trend-${s.trend}">
                                 <i class="fa-solid fa-arrow-${s.trend === 'up' ? 'up' : 'down'}"></i> ${s.trendVal}
                             </div>
@@ -1541,6 +1906,34 @@
                 `).join('') || '<tr><td colspan="4" style="text-align:center">No data available for this period</td></tr>';
             },
 
+            renderAutomations() {
+                const container = document.getElementById('recurring-container');
+                if (!container) return;
+
+                container.innerHTML = state.recurring.map(rule => {
+                    const nextDate = RecurringProcessor.calculateNextDate(
+                        new Date(rule.lastProcessedDate || rule.startDate),
+                        rule.frequency
+                    ).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                    return `
+                        <div class="card">
+                            <div class="budget-info">
+                                <span style="font-weight: 800;">${rule.desc}</span>
+                                <span class="amount-${rule.type}">${state.user.currency} ${rule.amount}</span>
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                <i class="fa-solid fa-repeat"></i> ${rule.frequency.charAt(0).toUpperCase() + rule.frequency.slice(1)}
+                                <span style="margin-left: 8px;">Next: ${nextDate}</span>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="UI.handleDeleteRecurring(${rule.id})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('') || '<div class="card">No automated transactions set up. Click "Create Recurring" to start!</div>';
+            },
+
             renderTips() {
                 const income = state.transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
                 const expenses = state.transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
@@ -1631,6 +2024,41 @@
                 if (!confirm(`Delete budget for ${cat}?`)) return;
                 delete state.budgets[cat];
                 Storage.save({ transactions: state.transactions, budgets: state.budgets, user: state.user });
+                this.renderAll();
+            },
+
+            handleSaveRecurring() {
+                const desc = document.getElementById('rec-desc').value;
+                const amount = parseFloat(document.getElementById('rec-amount').value);
+                const cat = document.getElementById('rec-cat').value;
+                const type = document.getElementById('rec-type').value;
+                const freq = document.getElementById('rec-freq').value;
+                const start = document.getElementById('rec-start').value;
+
+                if (!desc || isNaN(amount) || !start) return alert("Please fill in all fields");
+
+                const rule = {
+                    id: Date.now(),
+                    desc, amount, cat, type, frequency: freq,
+                    startDate: start,
+                    lastProcessedDate: null
+                };
+
+                state.recurring.push(rule);
+                Storage.save({ ...state });
+                this.renderAll();
+                document.getElementById('recurring-modal').style.display = 'none';
+
+                // Reset form
+                document.getElementById('rec-desc').value = '';
+                document.getElementById('rec-amount').value = '';
+                document.getElementById('rec-start').value = '';
+            },
+
+            handleDeleteRecurring(id) {
+                if (!confirm("Delete this automation rule?")) return;
+                state.recurring = state.recurring.filter(r => r.id !== id);
+                Storage.save({ ...state });
                 this.renderAll();
             },
 
@@ -1837,6 +2265,7 @@
                 ThemeManager.init();
                 ChartManager.init();
                 UI.init();
+                RecurringProcessor.process();
 
                 // Register Service Worker for PWA
                 if ('serviceWorker' in navigator) {
