@@ -2260,24 +2260,35 @@
             reader.readAsText(file);
         }
 
-        window.onload = () => {
-            try {
-                ThemeManager.init();
-                ChartManager.init();
-                UI.init();
-                RecurringProcessor.process();
+        
+    window.onload = () => {
+        try {
+            ThemeManager.init();
+            ChartManager.init();
+            UI.init();
+            RecurringProcessor.process();
 
-                // Register Service Worker for PWA
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.register('./sw.js')
-                        .then(() => console.log('FinVision Service Worker Registered'))
-                        .catch(err => console.error('SW Registration Failed:', err));
-                }
-            } catch (e) {
-                console.error("Fatal Initialization Error:", e);
-                alert("The app encountered an error during startup. Please check the console.");
+            // Register Service Worker for PWA
+            if (
+                'serviceWorker' in navigator &&
+                window.location.protocol !== 'file:'
+            ) {
+                navigator.serviceWorker
+                    .register('./sw.js')
+                    .then(() =>
+                        console.log('FinVision Service Worker Registered')
+                    )
+                    .catch(err =>
+                        console.error('SW Registration Failed:', err)
+                    );
             }
-        };
-    </script>
+        } catch (e) {
+            console.error('Fatal Initialization Error:', e);
+            alert(
+                'The app encountered an error during startup. Please check the console.'
+            );
+        }
+    };
+</script>
 </body>
 </html>
